@@ -34,7 +34,7 @@ function App() {
         try {
             // 1. Fetch the template
             // Ensure 'template.docx' is in your 'public' folder
-            const response = await fetch('/template.docx');
+            const response = await fetch('/slip_template.docx.docx');
             if (!response.ok) {
                 throw new Error(`Failed to fetch template: ${response.statusText}. Ensure 'template.docx' is in your public folder.`);
             }
@@ -107,7 +107,7 @@ function App() {
     };
 
     return (
-        <div className='h-dvh w-dvw m-4'> {/* Use Box for Chakra styling */}
+        <Box className='h-dvh w-dvw p-4 flex flex-col items-center'> {/* Use Box for Chakra styling */}
             <Button onClick={generateWordDoc} variant={'subtle'}>
                 Generate Word Document (.docx)
             </Button>
@@ -125,7 +125,7 @@ function App() {
             />
             <Toaster />
 
-        </div>
+        </Box>
     );
 }
 
