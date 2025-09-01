@@ -23,6 +23,9 @@ export interface CoverageSectionData {
     id: string; // Keep ID for React keys, but not necessarily for docxtemplater data
     title: string;
     content: string; // The main description paragraph for the section
+    sumInsured: number;
+    indemnityPeriod: string;
+    totalSumInsured?: number; // Optional, can be calculated if needed
     clauses: Clause[]; // The numbered list items within the section
 }
 
@@ -40,6 +43,8 @@ export function CoverageEditor({ sections, setSections }: CoverageEditorProps) {
                 id: crypto.randomUUID(), // Unique ID for React keying
                 title: '',
                 content: '',
+                sumInsured: 0,
+                indemnityPeriod: '',
                 clauses: [],
             },
         ]);
@@ -61,6 +66,22 @@ export function CoverageEditor({ sections, setSections }: CoverageEditorProps) {
         setSections((prevSections) =>
             prevSections.map((section) =>
                 section.id === id ? { ...section, content: newContent } : section
+            )
+        );
+    };
+
+    const updateSectionSumInsured = (id: string, newSumInsured: number) => {
+        setSections((prevSections) =>
+            prevSections.map((section) =>
+                section.id === id ? { ...section, sumInsured: newSumInsured } : section
+            )
+        );
+    };
+
+    const updateSectionIndemnityPeriod = (id: string, newIndemnityPeriod: string) => {
+        setSections((prevSections) =>
+            prevSections.map((section) =>
+                section.id === id ? { ...section, indemnityPeriod: newIndemnityPeriod } : section
             )
         );
     };
@@ -120,7 +141,7 @@ export function CoverageEditor({ sections, setSections }: CoverageEditorProps) {
             <Heading as="h2" size="lg" mb={4}>Coverage Details</Heading>
 
             {sections.map((section, sectionIndex) => (
-                <Box key={section.id} p={4} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
+                <Box key={section.id} p={4} borderWidth="1px" borderRadius="lg" shadow="md">
                     <HStack justifyContent="space-between" alignItems="center" mb={4}>
                         <Heading as="h3" size="md">Section {sectionIndex + 1}</Heading>
                         <IconButton
@@ -148,6 +169,25 @@ export function CoverageEditor({ sections, setSections }: CoverageEditorProps) {
                             value={section.content}
                             onChange={(e) => updateSectionContent(section.id, e.target.value)}
                             minH="100px"
+                        />
+                    </Field.Root>
+
+                    <Field.Root mb={4}>
+                        <Field.Label>Sum Insured</Field.Label>
+                        <Input
+                            placeholder="e.g., S$1,000,000"
+                            value={section.sumInsured}
+                            type="number"
+                            onChange={(e) => updateSectionSumInsured(section.id, e.target.value)}
+                        />
+                    </Field.Root>
+
+                    <Field.Root mb={4}>
+                        <Field.Label>Indemnity Period</Field.Label>
+                        <Input
+                            placeholder="e.g., 12 months"
+                            value={section.indemnityPeriod}
+                            onChange={(e) => updateSectionIndemnityPeriod(section.id, e.target.value)}
                         />
                     </Field.Root>
 

@@ -54,6 +54,8 @@ function App() {
                 refNo: 'IAR/PS-XXXX', // Example static data or get from state if available
                 currentDate: new Date().toLocaleDateString('en-US'), // Example static data
                 ...generalInfo, // Spread generalInfo state
+                totalSumInsured: coverageSections.reduce((acc, s) => acc + (Number(s.sumInsured) || 0), 0),
+
                 sections: coverageSections.map(section => ({
                     title: section.title,
                     content: section.content,
@@ -61,7 +63,9 @@ function App() {
                     // If your template expects a simple list of strings, you might do:
                     // clauses: section.clauses.map(clause => clause.description)
                     // If it expects objects with a 'description' field (as suggested in the template example):
-                    clauses: section.clauses.map(clause => ({ description: clause.description }))
+                    clauses: section.clauses.map(clause => ({ description: clause.description })),
+                    sumInsured: section.sumInsured,
+                    indemnityPeriod: section.indemnityPeriod,
                 })),
             };
 
