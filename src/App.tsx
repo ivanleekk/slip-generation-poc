@@ -1,5 +1,5 @@
 // src/App.tsx
-import { Box, VStack, Button } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 import { useState } from 'react';
 import { GeneralInfo } from "@/components/generalInfo"; // Assuming correct path
 import { CoverageEditor, type CoverageSectionData } from "@/components/coverageEditor"; // Assuming correct path, import CoverageSectionData
@@ -32,67 +32,62 @@ function App() {
 
     const generateWordDoc = async () => {
         try {
-            // 1. Fetch the template
-            // Ensure 'template.docx' is in your 'public' folder
-            const response = await fetch('/slip_template.docx.docx');
+            // 1. Fetch the template from the public folder
+            // Ensure 'slip_template.docx' (exact name) is present in your 'public' folder
+            const response = await fetch('slip_template.docx');
             if (!response.ok) {
-                throw new Error(`Failed to fetch template: ${response.statusText}. Ensure 'template.docx' is in your public folder.`);
+                console.error('Template fetch failed', response.status, response.statusText);
+                throw new Error(`Failed to fetch template: ${response.statusText}. Ensure 'slip_template.docx' exists in your public folder (public/slip_template.docx).`);
             }
-            const templateBlob = await response.blob();
-            const reader = new FileReader();
 
-            reader.onload = async function (event) {
-                if (event.target && event.target.result) {
-                    const content = event.target.result as ArrayBuffer;
-                    const zip = new PizZip(content);
-                    const doc = new Docxtemplater(zip, {
-                        paragraphLoop: true,
-                        linebreaks: true,
-                    });
+            // Read template as ArrayBuffer directly (no FileReader needed)
+            const content = await response.arrayBuffer();
+            const zip = new PizZip(content);
+            const doc = new Docxtemplater(zip, {
+                paragraphLoop: true,
+                linebreaks: true,
+            });
 
-                    // 2. Prepare the data for the template
-                    // Ensure your data structure matches your template placeholders
-                    const data = {
-                        refNo: 'IAR/PS-XXXX', // Example static data or get from state if available
-                        currentDate: new Date().toLocaleDateString('en-US'), // Example static data
-                        ...generalInfo, // Spread generalInfo state
-                        sections: coverageSections.map(section => ({
-                            title: section.title,
-                            content: section.content,
-                            // Ensure 'clauses' array items match what your template expects.
-                            // If your template expects a simple list of strings, you might do:
-                            // clauses: section.clauses.map(clause => clause.description)
-                            // If it expects objects with a 'description' field (as suggested in the template example):
-                            clauses: section.clauses.map(clause => ({ description: clause.description }))
-                        })),
-                    };
-
-                    // console.log("Data for docxtemplater:", data); // Uncomment for debugging data structure
-
-                    // 3. Set the data and render the document
-                    doc.setData(data);
-                    doc.render();
-
-                    // 4. Generate the output Word document
-                    const out = doc.getZip().generate({
-                        type: 'blob',
-                        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        compression: 'DEFLATE',
-                    });
-
-                    // 5. Save the document
-                    saveAs(out, 'Generated_Document.docx');
-                    toaster.create({
-                        title: "Word document generated.",
-                        description: "Your .docx file has been downloaded.",
-                        type: "success",
-                        duration: 5000,
-                        closable: true,
-                    });
-                }
+            // 2. Prepare the data for the template
+            // Ensure your data structure matches your template placeholders
+            const data = {
+                refNo: 'IAR/PS-XXXX', // Example static data or get from state if available
+                currentDate: new Date().toLocaleDateString('en-US'), // Example static data
+                ...generalInfo, // Spread generalInfo state
+                sections: coverageSections.map(section => ({
+                    title: section.title,
+                    content: section.content,
+                    // Ensure 'clauses' array items match what your template expects.
+                    // If your template expects a simple list of strings, you might do:
+                    // clauses: section.clauses.map(clause => clause.description)
+                    // If it expects objects with a 'description' field (as suggested in the template example):
+                    clauses: section.clauses.map(clause => ({ description: clause.description }))
+                })),
             };
 
-            reader.readAsArrayBuffer(templateBlob);
+            // console.log("Data for docxtemplater:", data); // Uncomment for debugging data structure
+
+            // 3. Set the data and render the document
+            console.log("Rendering document with data:", data); // Debugging log
+            doc.render(data);
+
+
+            // 4. Generate the output Word document
+            const out = doc.getZip().generate({
+                type: 'blob',
+                mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                compression: 'DEFLATE',
+            });
+
+            // 5. Save the document
+            saveAs(out, generalInfo.business + generalInfo.periodOfInsurance + '.docx');
+            toaster.create({
+                title: "Word document generated.",
+                description: "Your .docx file has been downloaded.",
+                type: "success",
+                duration: 5000,
+                closable: true,
+            });
 
         } catch (error) {
             console.error('Error generating Word document:', error);
