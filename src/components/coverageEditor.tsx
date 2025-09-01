@@ -11,7 +11,7 @@ import {
     Heading,
     Text,
 } from '@chakra-ui/react';
-import { FaPlus, FaTrash } from 'react-icons/fa'; // Using react-icons
+import { FaTrash } from 'react-icons/fa'; // Using react-icons
 
 // Define types for better code clarity, export them for App.tsx
 export interface Clause {
@@ -178,7 +178,7 @@ export function CoverageEditor({ sections, setSections }: CoverageEditorProps) {
                             placeholder="e.g., S$1,000,000"
                             value={section.sumInsured}
                             type="number"
-                            onChange={(e) => updateSectionSumInsured(section.id, e.target.value)}
+                            onChange={(e) => updateSectionSumInsured(section.id, Number(e.target.value))}
                         />
                     </Field.Root>
 
