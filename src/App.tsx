@@ -107,10 +107,7 @@ function App() {
 
     return (
         <Box className='h-dvh w-dvw p-4 flex flex-col items-center'> {/* Use Box for Chakra styling */}
-            <Button onClick={generateWordDoc} variant={'subtle'}>
-                Generate Word Document (.docx)
-            </Button>
-
+            <p className='text-lg '>Acclaim Slip Generation POC</p>
             {/* General Info component, receiving state and update handler */}
             <GeneralInfo
                 {...generalInfo} // Pass all generalInfo fields as props
@@ -122,6 +119,10 @@ function App() {
                 sections={coverageSections}
                 setSections={setCoverageSections}
             />
+            <Button onClick={generateWordDoc} variant={'solid'}>
+                Generate Word Document (.docx)
+            </Button>
+
             <Toaster />
 
         </Box>
