@@ -9,6 +9,7 @@ import { Toaster, toaster } from "@/components/ui/toaster"
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import { saveAs } from 'file-saver';
+import EmailUploader from './components/emailUploader';
 
 function App() {
 
@@ -109,19 +110,32 @@ function App() {
         <Box className='h-dvh w-dvw p-4 flex flex-col items-center'> {/* Use Box for Chakra styling */}
             <p className='text-lg '>Acclaim Slip Generation POC</p>
             {/* General Info component, receiving state and update handler */}
-            <GeneralInfo
-                {...generalInfo} // Pass all generalInfo fields as props
-                onFieldChange={handleGeneralInfoChange}
-            />
+            <div className='flex gap-4'>
+                <div>
+                    <EmailUploader
+                        setGeneralInfo={setGeneralInfo}
+                        setCoverageSections={setCoverageSections}
+                        generalInfo={generalInfo}
+                        coverageSections={coverageSections}
+                    />
+                </div>
+                <div>
+                    <GeneralInfo
+                        {...generalInfo} // Pass all generalInfo fields as props
+                        onFieldChange={handleGeneralInfoChange}
+                    />
 
-            {/* Coverage Editor component, receiving state and its setter */}
-            <CoverageEditor
-                sections={coverageSections}
-                setSections={setCoverageSections}
-            />
-            <Button onClick={generateWordDoc} variant={'solid'}>
-                Generate Word Document (.docx)
-            </Button>
+                    {/* Coverage Editor component, receiving state and its setter */}
+                    <CoverageEditor
+                        sections={coverageSections}
+                        setSections={setCoverageSections}
+                    />
+                    <Button onClick={generateWordDoc} variant={'solid'}>
+                        Generate Word Document (.docx)
+                    </Button>
+                </div>
+            </div>
+
 
             <Toaster />
 
