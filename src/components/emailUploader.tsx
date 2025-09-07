@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import OpenAI from "openai";
 import { Button, Input, InputGroup, CloseButton, FileUpload } from "@chakra-ui/react";
 import { LuFileUp } from "react-icons/lu";
-import { Toaster, toaster } from "@/components/ui/toaster"
+import { toaster } from "@/components/ui/toaster"
 
 interface EmailUploaderProps {
     setGeneralInfo: (info: any) => void;
