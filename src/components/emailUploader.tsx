@@ -80,7 +80,7 @@ export default function EmailUploader({ setGeneralInfo, setCoverageSections, gen
     }
 
     return (
-        <div className="gap-4">
+        <div className="gap-4 w-lg whitespace-pre-wrap text-wrap">
             <h3>Email Uploader (All as One Text)</h3>
             <FileUpload.Root gap="1" maxWidth="300px">
                 <FileUpload.HiddenInput accept=".eml,text/plain" multiple onChange={e => handleFiles(e.target.files)} />
@@ -115,17 +115,17 @@ export default function EmailUploader({ setGeneralInfo, setCoverageSections, gen
             </Button>
             <div style={{ marginBottom: 12 }}>
                 <strong>Combined email text:</strong>
-                <div style={{ fontSize: 13, maxWidth: 720, whiteSpace: "pre-wrap", background: "#fafafa", padding: 8, minHeight: 120 }}>
+                <div >
                     {combinedText || <span style={{ color: '#aaa' }}>[No emails uploaded]</span>}
                 </div>
             </div>
             <div style={{ marginBottom: 12 }}>
                 <strong>Extracted General Info:</strong>
-                <pre style={{ fontSize: 13, background: '#f6f6f6', padding: 8 }}>{JSON.stringify(generalInfo, null, 2)}</pre>
+                <pre className="text-wrap">{JSON.stringify(generalInfo, null, 2)}</pre>
             </div>
             <div style={{ marginBottom: 12 }}>
                 <strong>Extracted Coverage Sections:</strong>
-                <pre style={{ fontSize: 13, background: '#f6f6f6', padding: 8 }}>{JSON.stringify(coverageSections, null, 2)}</pre>
+                <pre className="text-wrap">{JSON.stringify(coverageSections, null, 2)}</pre>
             </div>
         </div>
     );
