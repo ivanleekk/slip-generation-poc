@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import OpenAI from "openai";
 import { Button, Input, InputGroup, CloseButton, FileUpload } from "@chakra-ui/react";
 import { LuFileUp } from "react-icons/lu";
-
+import { Toaster, toaster } from "@/components/ui/toaster"
 
 interface EmailUploaderProps {
     setGeneralInfo: (info: any) => void;
@@ -39,7 +39,7 @@ export default function EmailUploader({ setGeneralInfo, setCoverageSections, gen
             baseURL: "http://localhost:8080/v1",
             dangerouslyAllowBrowser: true,
         });
-        const systemPrompt = `You are a helpful assistant that extracts insurance slip data from emails. Do not think for too long. \nOutput ONLY valid JSON with the following structure:\n\n{\n  "generalInfo": {\n    "classOfInsurance": "",\n    "policyForm": "",\n    "insuredName": "",\n    "correspondenceAddress": "",\n    "business": "",\n    "periodOfInsurance": ""\n  },\n  "coverageSections": [\n    {\n      "title": "",\n      "content": "",\n      "clauses": [{ "description": "" }],\n      "sumInsured": "",\n      "indemnityPeriod": ""\n    }\n  ]\n}\n\nExtract the information from the provided email(s) and fill in the fields. If a field is missing, leave it as an empty string. Do not include any commentary or markdown, only output the JSON.`;
+        const systemPrompt = `You are a helpful assistant that extracts insurance slip data from emails.\nOutput ONLY valid JSON with the following structure:\n\n{\n  "generalInfo": {\n    "classOfInsurance": "",\n    "policyForm": "",\n    "insuredName": "",\n    "correspondenceAddress": "",\n    "business": "",\n    "periodOfInsurance": ""\n  },\n  "coverageSections": [\n    {\n      "title": "",\n      "content": "",\n      "clauses": [{ "description": "" }],\n      "sumInsured": "",\n      "indemnityPeriod": ""\n    }\n  ]\n}\n\nExtract the information from the provided email(s) and fill in the fields. If a field is missing, leave it as an empty string. Do not include any commentary or markdown, only output the JSON.`;
         const completion = await client.chat.completions.create({
             model: import.meta.env.VITE_OPENAI_MODEL || "gpt-4o",
             messages: [
@@ -55,12 +55,16 @@ export default function EmailUploader({ setGeneralInfo, setCoverageSections, gen
             const sections = (parsed.coverageSections || []).map((section: any) => ({
                 ...section,
                 id: crypto.randomUUID(),
-                sumInsured: section.sumInsured ? Number(section.sumInsured) : 0,
+                sumInsured: section.sumInsured
+                    ? Number(String(section.sumInsured).replace(/,/g, ''))
+                    : 0,
             }));
             setCoverageSections(sections);
             console.log("Parsed LLM output:", parsed);
+            toaster.success({ title: "Success", description: "Successfully extracted data from emails." });
         } catch (e) {
             console.error("Failed to parse LLM output:", e, llmText);
+            toaster.error({ title: "Error", description: "Failed to extract data from emails. See console for details." });
         }
     }
 
